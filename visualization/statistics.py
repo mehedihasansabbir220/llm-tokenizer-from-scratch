@@ -21,6 +21,7 @@ library module of the same name and break every import of it in the project
 from __future__ import annotations
 
 import logging
+import re
 import unicodedata
 from collections import Counter
 from dataclasses import asdict, dataclass, field
@@ -48,6 +49,10 @@ _BAR_WIDTH = 22
 # Longest token rendered in a table cell before it is elided. Keeps one
 # pathological token from stretching the whole table off-screen.
 _MAX_CELL_WIDTH = 28
+
+# ANSI SGR escape sequences (colors, bold, reset). Cells may arrive styled —
+# demo.py colors its "In vocab?" column — and these carry zero display width.
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 @dataclass(frozen=True)
@@ -542,15 +547,20 @@ def render_table(
 def _display_width(text: str) -> int:
     """Measure how many terminal columns a string occupies.
 
+    Three things are not one column each, and all three appear in practice:
+    ANSI escape sequences occupy none (they are instructions, not glyphs),
+    combining marks occupy none, and East Asian wide characters occupy two.
+    Measuring with ``len`` gets every one of them wrong, which shows up as a
+    table whose colored rows are visibly shorter than its header.
+
     Args:
         text: String to measure.
 
     Returns:
-        Column count. East Asian wide and fullwidth characters count as two;
-        zero-width combining marks count as none.
+        Column count.
     """
     width = 0
-    for char in text:
+    for char in _ANSI_ESCAPE_RE.sub("", text):
         if unicodedata.combining(char):
             continue
         width += 2 if unicodedata.east_asian_width(char) in ("W", "F") else 1
@@ -578,8 +588,12 @@ def _pad(text: str, width: int, alignment: str) -> str:
 def _elide(text: str, limit: int = _MAX_CELL_WIDTH) -> str:
     """Shorten an over-long cell value with an ellipsis.
 
+    Assumes unstyled input: truncating a string that contains ANSI sequences
+    could cut one in half and leave the terminal stuck in that color. Style
+    the result of this call, never its input.
+
     Args:
-        text: Cell contents.
+        text: Cell contents, without escape sequences.
         limit: Maximum display width.
 
     Returns:

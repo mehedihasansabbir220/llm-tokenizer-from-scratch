@@ -1,12 +1,25 @@
+# =============================================================================
 # Default configuration for the NLP Tokenizer project.
+# =============================================================================
+# Every key below is required: ConfigLoader raises rather than guessing a
+# default, so a typo fails loudly at startup instead of silently changing
+# behavior. Paths are resolved relative to the project root.
+#
+# Load a different file with:  python app.py --config path/to/file.yaml
 
 project:
   name: "tokenizer-from-scratch"
   version: "1.0.0"
+  # Reserved for reproducibility. Nothing in the pipeline is random today —
+  # vocabulary selection breaks ties lexicographically rather than by chance —
+  # so this value is currently loaded and validated but never consumed.
   seed: 42
 
 paths:
+  # Input corpus: one document per line, UTF-8.
   dataset: "datasets/sample_corpus.txt"
+  # Trained vocabulary. Written by Vocabulary.save() / VocabularyTrainer.save()
+  # and read back by Vocabulary.load().
   vocabulary: "models/vocabulary.json"
   encoded_output: "outputs/encoded.json"
   decoded_output: "outputs/decoded.json"
@@ -14,24 +27,40 @@ paths:
   log_file: "outputs/app.log"
 
 preprocessing:
+  # Fold everything to lowercase, so "The" and "the" share one vocabulary slot.
   lowercase: true
+  # Strip characters in Python's string.punctuation.
   remove_punctuation: true
+  # Collapse runs of whitespace to a single space and trim the ends.
   collapse_whitespace: true
+  # Minimum token length. NOTE: TextCleaner does not currently apply this —
+  # it is enforced only by VocabularyTrainer, which takes the value as a
+  # constructor argument rather than reading it from here. Changing this key
+  # alone has no effect on the app.py pipeline.
   min_token_length: 1
 
 tokenizer:
+  # Hard ceiling on vocabulary size, special tokens included. Tokens beyond
+  # the cap are dropped in ascending frequency order.
   vocab_size: 5000
+  # Minimum corpus occurrences required for a token to earn a slot. Raise it
+  # to shrink the vocabulary and push rare words to the unknown token.
   min_frequency: 1
+  # Reserved tokens, assigned ids 0..N in this order before any corpus token.
+  # Keep the order stable: saved vocabularies and encoded outputs depend on it.
   special_tokens:
     - "<PAD>"
     - "<UNK>"
     - "<BOS>"
     - "<EOS>"
+  # Each of these must also appear in special_tokens above.
   unknown_token: "<UNK>"
   pad_token: "<PAD>"
   bos_token: "<BOS>"
   eos_token: "<EOS>"
 
 runtime:
+  # Sentence used for the encode/decode demonstration in app.py.
   demo_sentence: "The quick brown fox jumps over the lazy dog."
+  # DEBUG, INFO, WARNING, ERROR, or CRITICAL.
   log_level: "INFO"

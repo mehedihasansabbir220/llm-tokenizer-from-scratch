@@ -1,7 +1,8 @@
 # -----------------------------------------------------------------------------
 # tokenizer-from-scratch — runtime + development dependencies
 #
-# Target: Python >= 3.11 (developed and verified on 3.14)
+# Target: Python >= 3.12 (developed and verified on 3.14)
+#         The floor is set by numpy 2.5, which requires 3.12.
 # Policy: compatible-release pinning — a tested floor with a next-major ceiling,
 #         so patch/minor security fixes are picked up but breaking majors are not.
 #
