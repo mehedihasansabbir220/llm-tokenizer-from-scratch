@@ -1,1 +1,25 @@
-PyYAML>=6.0.1
+# -----------------------------------------------------------------------------
+# tokenizer-from-scratch — runtime + development dependencies
+#
+# Target: Python >= 3.11 (developed and verified on 3.14)
+# Policy: compatible-release pinning — a tested floor with a next-major ceiling,
+#         so patch/minor security fixes are picked up but breaking majors are not.
+#
+# Install:  pip install -r requirements.txt
+# -----------------------------------------------------------------------------
+
+# --- Core numerics / data ----------------------------------------------------
+numpy>=2.5.1,<3.0
+pandas>=3.0.5,<4.0
+
+# --- Visualization -----------------------------------------------------------
+matplotlib>=3.11.1,<4.0
+
+# --- Configuration -----------------------------------------------------------
+PyYAML>=6.0.3,<7.0
+
+# --- CLI / progress ----------------------------------------------------------
+tqdm>=4.70.0,<5.0
+
+# --- Testing -----------------------------------------------------------------
+pytest>=9.1.1,<10.0
