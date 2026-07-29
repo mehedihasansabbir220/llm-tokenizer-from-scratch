@@ -1,0 +1,17 @@
+{
+  "sentence": "the quick brown fox jumps over the lazy dog",
+  "token_ids": [
+    2,
+    8,
+    174,
+    58,
+    111,
+    132,
+    160,
+    8,
+    136,
+    91,
+    3
+  ],
+  "length": 11
+}

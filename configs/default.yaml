@@ -1,0 +1,37 @@
+# Default configuration for the NLP Tokenizer project.
+
+project:
+  name: "tokenizer-from-scratch"
+  version: "1.0.0"
+  seed: 42
+
+paths:
+  dataset: "datasets/sample_corpus.txt"
+  vocabulary: "models/vocabulary.json"
+  encoded_output: "outputs/encoded.json"
+  decoded_output: "outputs/decoded.json"
+  statistics: "outputs/statistics.json"
+  log_file: "outputs/app.log"
+
+preprocessing:
+  lowercase: true
+  remove_punctuation: true
+  collapse_whitespace: true
+  min_token_length: 1
+
+tokenizer:
+  vocab_size: 5000
+  min_frequency: 1
+  special_tokens:
+    - "<PAD>"
+    - "<UNK>"
+    - "<BOS>"
+    - "<EOS>"
+  unknown_token: "<UNK>"
+  pad_token: "<PAD>"
+  bos_token: "<BOS>"
+  eos_token: "<EOS>"
+
+runtime:
+  demo_sentence: "The quick brown fox jumps over the lazy dog."
+  log_level: "INFO"
